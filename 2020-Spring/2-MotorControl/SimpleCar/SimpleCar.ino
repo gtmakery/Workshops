@@ -1,41 +1,41 @@
-int pin_potentiometer = A0;
+#define PIN_POT A0
 
-int pin_goButton = 2;
+#define PIN_GO_BTN 2
 
 
-int pin_leftMotorForward = 10;
-int pin_leftMotorReverse = 11;
-int pin_rightMotorForward = 5;
-int pin_rightMotorReverse = 6;
+#define PIN_L_MTR_FWD 10
+#define PIN_L_MTR_REV 11
+#define PIN_R_MTR_FWD 5
+#define PIN_R_MTR_REV 6
 
 
 
 void setupButtons() {
-  pinMode(pin_goButton, INPUT_PULLUP);
+  pinMode(PIN_GO_BTN, INPUT_PULLUP);
 }
 
 bool btnGo() {
-  return digitalRead(pin_goButton) != HIGH;
+  return digitalRead(PIN_GO_BTN) != HIGH;
 }
 
 
 void setupPotentiometer() {
-  pinMode(pin_potentiometer, INPUT);
+  pinMode(PIN_POT, INPUT);
 }
+
 
 //range: 0-1023
-int pot_angle;
-bool potentiometerDebug = false;
-void potentiometer() {
-  pot_angle = analogRead(pin_potentiometer);
+bool potentiometerDebug = true;
+int readPot() {
+  int pot_angle = analogRead(PIN_POT);
   if (potentiometerDebug) {
-    printPotentiometerData();
+    printPotentiometerData(pot_angle);
   }
+  return pot_angle;
 }
-void printPotentiometerData() {
+void printPotentiometerData(int pot_angle) {
   Serial.println(pot_angle);
 }
-
 
 
 void setup() {
@@ -50,8 +50,8 @@ void setup() {
 void loop() {
   if (btnGo()) {
     while (btnGo()) {}
-    potentiometer();
-    int choice = pot_angle * 3 / 1023;
+    Serial.println("GO!");
+    int choice = readPot() * 3 / 1023;
     switch(choice) {
       case 0:
         line();
@@ -65,10 +65,12 @@ void loop() {
         break;
     }
   }
+  delay(50);
 }
 
 //drive in a line
 void line() {
+  Serial.println("line");
   setDrive(255, 255);
   delay(1000);
   setDrive(0, 0);
@@ -76,6 +78,7 @@ void line() {
 
 //drive in a square
 void square() {
+  Serial.println("square");
   line();
   setDrive(255, -255);
   delay(500);
@@ -96,7 +99,8 @@ void square() {
 
 //drive in a circle
 void circle() {
-  setDrive(255, 100);
+  Serial.println("circle");
+  setDrive(255, 220);
   delay(2000);
   setDrive(0, 0);
 }
@@ -104,17 +108,17 @@ void circle() {
 //input: -255, 255
 void setDrive(int left, int right) {
   if (left < 0) {
-    analogWrite(pin_leftMotorForward, 0);
-    analogWrite(pin_leftMotorReverse, -left);
+    analogWrite(PIN_L_MTR_FWD, 0);
+    analogWrite(PIN_L_MTR_REV, -left);
   } else {
-    analogWrite(pin_leftMotorForward, left);
-    analogWrite(pin_leftMotorReverse, 0);
+    analogWrite(PIN_L_MTR_FWD, left);
+    analogWrite(PIN_L_MTR_REV, 0);
   }
   if (right < 0) {
-    analogWrite(pin_rightMotorForward, 0);
-    analogWrite(pin_rightMotorReverse, -right);
+    analogWrite(PIN_R_MTR_FWD, 0);
+    analogWrite(PIN_R_MTR_REV, -right);
   } else {
-    analogWrite(pin_rightMotorForward, right);
-    analogWrite(pin_rightMotorReverse, 0);
+    analogWrite(PIN_R_MTR_FWD, right);
+    analogWrite(PIN_R_MTR_REV, 0);
   }
 }
