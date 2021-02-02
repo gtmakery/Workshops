@@ -5,6 +5,6 @@ void setup() {
 }
 
 void loop() {
-  analogWrite(PIN_LED, (sin(millis()/100)+1) * 127);
+  analogWrite(PIN_LED, (sin(millis()/1000.0)+1) * 127);
   delay(10);
 }
